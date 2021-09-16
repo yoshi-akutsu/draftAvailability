@@ -1,85 +1,93 @@
 <script>
-    google.script.run.withSuccessHandler(printCalendars).getAllCalendars();
-  
-    function printCalendars([calendars, userEmail]) {
-      console.log(calendars, userEmail);
-      appendCalendarOptions([calendars, userEmail]);
-    }
-  
-    function appendCalendarOptions([calendarPairs, userEmail]) {
-      let groupOptions = document.getElementById("group-options");
-      let coworkerOptions = document.getElementById("coworker-options");
-      let otherOptions = document.getElementById("other-options");
-  
-      for (let id in calendarPairs) {
-        let checkboxDiv = document.createElement("div");
-        checkboxDiv.classList.add("from-check");
-  
-        let checkboxInput = document.createElement("input");
-        checkboxInput.classList.add("form-check-input");
-        checkboxInput.setAttribute("type", "checkbox");
-        checkboxInput.id = id;
-  
-        // Specific calendars automatically selected
-        if (id == userEmail) {
-          checkboxInput.checked = true;
-        }
-        if (id == "collegeliftoff.org_t5ha6hmrg9tsgal01g1j0ocsao@group.calendar.google.com") {
-          checkboxInput.checked = true;
-        }
-        if (id == "c_h2eh4jrtfcunkvmvluaob26o90@group.calendar.google.com") {
-          checkboxInput.checked = true;
-        }
-  
-        let checkboxLabel = document.createElement("label");
-        checkboxLabel.classList.add("form-check-label");
-        checkboxLabel.setAttribute("for", id);
-        checkboxLabel.textContent = calendarPairs[id];
-  
-        checkboxDiv.appendChild(checkboxInput);
-        checkboxDiv.appendChild(checkboxLabel); 
-  
-        // Selectively append child
-        if ((id.includes("group") && id.includes("collegeliftoff")) || id.includes("c_h2eh4jrtfcunkvmvluaob26o90")) {
-          groupOptions.appendChild(checkboxDiv);
-        }
-        else if(id.includes("collegeliftoff") || id.includes("incollegeplanning")) {
-          coworkerOptions.appendChild(checkboxDiv);
-        }
-        else {
-          otherOptions.appendChild(checkboxDiv);
-        }
+  google.script.run.withSuccessHandler(printCalendars).getAllCalendars();
+
+  function printCalendars([calendars, userEmail]) {
+    console.log(calendars, userEmail);
+    appendCalendarOptions([calendars, userEmail]);
+  }
+
+  function appendCalendarOptions([calendarPairs, userEmail]) {
+    let groupOptions = document.getElementById("group-options");
+    let coworkerOptions = document.getElementById("coworker-options");
+    let otherOptions = document.getElementById("other-options");
+
+    for (let id in calendarPairs) {
+      let checkboxDiv = document.createElement("div");
+      checkboxDiv.classList.add("from-check");
+
+      let checkboxInput = document.createElement("input");
+      checkboxInput.classList.add("form-check-input");
+      checkboxInput.setAttribute("type", "checkbox");
+      checkboxInput.id = id;
+
+      // Specific calendars automatically selected
+      if (id == userEmail) {
+        checkboxInput.checked = true;
+      }
+      if (id == "collegeliftoff.org_t5ha6hmrg9tsgal01g1j0ocsao@group.calendar.google.com") {
+        checkboxInput.checked = true;
+      }
+      if (id == "c_h2eh4jrtfcunkvmvluaob26o90@group.calendar.google.com") {
+        checkboxInput.checked = true;
+      }
+
+      let checkboxLabel = document.createElement("label");
+      checkboxLabel.classList.add("form-check-label");
+      checkboxLabel.setAttribute("for", id);
+      checkboxLabel.textContent = calendarPairs[id];
+
+      checkboxDiv.appendChild(checkboxInput);
+      checkboxDiv.appendChild(checkboxLabel); 
+
+      // Selectively append child
+      if ((id.includes("group") && id.includes("collegeliftoff")) || id.includes("c_h2eh4jrtfcunkvmvluaob26o90")) {
+        groupOptions.appendChild(checkboxDiv);
+      }
+      else if(id.includes("collegeliftoff") || id.includes("incollegeplanning")) {
+        coworkerOptions.appendChild(checkboxDiv);
+      }
+      else {
+        otherOptions.appendChild(checkboxDiv);
       }
     }
-  
-    let submit = document.getElementById("submit");
-    submit.addEventListener("click", () => {
-      let selectedCalendars = [];
-      let inputs = document.querySelectorAll("input");
-      for (let i = 0; i < inputs.length; i++) {
-        if (inputs[i].checked === true) {
-          selectedCalendars.push(inputs[i].id);
-        }
-      }
-      google.script.run.withSuccessHandler(handleSubmission).getUnavailability(selectedCalendars);
-    })
-  
-    function killTheKids(div){
-      while (div.firstChild) {
-          div.removeChild(div.firstChild);
-      }
-      return;
-    }
-  
-    function handleSubmission(availability) {
-      console.log(availability);
-      let availabilityList = document.getElementById("availability");
-      killTheKids(availabilityList);
-      for (let i = 0; i < availability.length - 1; i++) {
-        let dayItem = document.createElement("li");
-        dayItem.textContent = availability[i][0] + ": " + availability[i][1];
-        availabilityList.appendChild(dayItem);
+  }
+
+  let submit = document.getElementById("submit");
+  submit.addEventListener("click", () => {
+    let selectedCalendars = [];
+    let inputs = document.querySelectorAll("input");
+    for (let i = 0; i < inputs.length; i++) {
+      if (inputs[i].checked === true) {
+        selectedCalendars.push(inputs[i].id);
       }
     }
-  
-  </script>
+    google.script.run.withSuccessHandler(handleSubmission).getUnavailability(selectedCalendars);
+  })
+
+  function killTheKids(div){
+    while (div.firstChild) {
+        div.removeChild(div.firstChild);
+    }
+    return;
+  }
+
+  function formatDate(date) {
+    let dateArray = date.split(" ");
+    dateArray[0] = "(" + dateArray[0] + ")";
+    dateArray.pop();
+    return dateArray.join(" ");
+  }
+
+  function handleSubmission(availability) {
+    console.log(availability);
+    let availabilityList = document.getElementById("availability");
+    killTheKids(availabilityList);
+    for (let i = 0; i < availability.length - 1; i++) {
+      let dayItem = document.createElement("li");
+      let date = formatDate(availability[i][0]);
+      dayItem.innerHTML = "<strong>" + date + ": " + "</strong>" + availability[i][1];
+      availabilityList.appendChild(dayItem);
+    }
+  }
+
+</script>

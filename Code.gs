@@ -193,13 +193,13 @@ function militaryToTwelveHour(timeRange) {
   }
 
   if (end > 12) {
-    end = Number(end) - 12 + ":" + timeRange.split("-")[0].split(":")[1] + "pm";
+    end = Number(end) - 12 + ":" + timeRange.split("-")[1].split(":")[1] + "pm";
   }
   else if (end == 12) {
-    end = end + ":" + timeRange.split("-")[0].split(":")[1] + "pm";
+    end = end + ":" + timeRange.split("-")[1].split(":")[1] + "pm";
   }
   else {
-    end = end + ":" + timeRange.split("-")[0].split(":")[1] + "am";
+    end = end + ":" + timeRange.split("-")[1].split(":")[1] + "am";
   }
   return start.concat("-", end);
 }
