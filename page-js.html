@@ -61,6 +61,7 @@
         selectedCalendars.push(inputs[i].id);
       }
     }
+    console.log(selectedCalendars);
     google.script.run.withSuccessHandler(handleSubmission).getUnavailability(selectedCalendars);
   })
 
@@ -79,12 +80,14 @@
   }
 
   function handleSubmission(availability) {
-    console.log(availability);
     let availabilityList = document.getElementById("availability");
     killTheKids(availabilityList);
     for (let i = 0; i < availability.length - 1; i++) {
       let dayItem = document.createElement("li");
       let date = formatDate(availability[i][0]);
+      if (availability[i][1].includes("unavailable")) {
+        availability[i][1] = "unavailable";
+      }
       dayItem.innerHTML = "<strong>" + date + ": " + "</strong>" + availability[i][1];
       availabilityList.appendChild(dayItem);
     }
